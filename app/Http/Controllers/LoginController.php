@@ -25,14 +25,14 @@ class LoginController extends Controller
     {
         $request->validate([
             'address' => 'required|ip',
-            'username' => 'required|string',
-            'password' => 'nullable|string',
+            'port' => 'required|integer|min:1|max:65535',
+            'token' => 'nullable|string',
             'save' => 'nullable'
         ]);
 
         $address = $request->input('address');
-        $username = $request->input('username');
-        $password = $request->input('password');
+        $port = $request->input('port');
+        $token = $request->input('token');
 
         $client = new Client([
             'verify' => false
@@ -40,10 +40,13 @@ class LoginController extends Controller
         
         try
         {
-            $res = $client->get('https://'. $address .'/rest/system/identity', [
-                'auth' =>  [$username, $password ?? ''],
+            $res = $client->get('https://'. $address .':'. $port .'/api/v1/', [
                 'connect_timeout' => 15, //in seconds
                 'http_errors' => true,
+                'headers' => [
+                    'Authorization' => "Bearer {$token}",
+                    'Accept' => 'application/json',
+                ]
             ]);
         }
         catch (RequestException $e) {
@@ -51,41 +54,37 @@ class LoginController extends Controller
             // else the login is corect
             if ($e->getCode() == 401)
             {
-                return back()->withErrors(['global' => 'Invalid credentials'])->withInput();
+                return back()->withErrors(['global' => 'Invalid token'])->withInput();
             }
             
             return back()->withErrors(['global' => $e->getMessage()])->withInput();
         }
         catch (Exception $e)
         {
-            return back()->withErrors(['global' => 'Something went wrong... Check the if the router is on or if the REST API is working.'])->withInput();
+            return back()->withErrors(['global' => 'Something went wrong... Check the if the cluster is online or if the API is working.'])->withInput();
         }
-
-        $identity = json_decode($res->getBody()->getContents())->name;
 
         // save the login data in the session
         session([
             'address' => $request->input('address'),
-            'username' => $request->input('username'),
-            'password' => $request->input('password'),
-            'identity' => $identity
+            'token' => $request->input('token'),
+            'port' => $request->input('port'),
         ]);
 
         if ($request->input('save') == 1 &&
-                !Profile::where('username', $request->input('username'))
+                !Profile::where('port', $request->input('port'))
                         ->where('address', $request->input('address'))
-                        ->where('identity', $identity)
                         ->exists())
         {
          
             Profile::create([
-                'username' => $request->input('username'),
+                'port' => $request->input('port'),
                 'address' => $request->input('address'),
-                'identity' => $identity,
-                'password' => $request->input('password')
+                'token' => $request->input('token')
             ]);
            
         }
+        dd("yay");
         return redirect()->route('showInterfaces');
     }
 

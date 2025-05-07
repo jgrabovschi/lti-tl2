@@ -9,20 +9,19 @@ class Profile extends Model
 {
     // model structure
     protected $fillable = [
-        'username',
         'address',
-        'identity',
-        'password',
+        'token',
+        'port',
     ];
 
     public $timestamps = false;
 
-    public function setPasswordAttribute($value)
+    public function setTokenAttribute($value)
     {
-        $this->attributes['password'] = Crypt::encryptString($value);
+        $this->attributes['token'] = Crypt::encryptString($value);
     }
 
-    public function getPasswordAttribute($value)
+    public function getTokenAttribute($value)
     {
         return Crypt::decryptString($value);
     }

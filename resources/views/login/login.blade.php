@@ -33,39 +33,67 @@
             @enderror
             <form action="{{ route('login.submit') }}" method="POST" class="max-w-sm mx-auto">
                 @csrf
+            
+                <!-- Flex container for IP and Port -->
+                <div class="mb-5 flex gap-4">
+                    <!-- IP Address -->
+                    <div class="w-2/3">
+                        <label for="address" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Your controller's IP address
+                        </label>
+                        <input type="text" id="address" name="address" value="{{ old('address') }}" 
+                               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
+                                      dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                               placeholder="x.x.x.x" required />
+                        @error('address')
+                            <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
+                        @enderror
+                    </div>
+            
+                    <!-- Port -->
+                    <div class="w-1/3">
+                        <label for="port" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Port</label>
+                        <input type="text" id="port" name="port" value="{{ old('port') }}" 
+                               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
+                                      dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                               placeholder="6443" required />
+                        @error('port')
+                            <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+            
+                <!-- Token -->
                 <div class="mb-5">
-                    <label for="address" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your router IP address</label>
-                    <input type="text" id="address" name="address" value="{{ old('address') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="x.x.x.x" required />
-                    @error('address')
+                    <label for="token" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your token</label>
+                    <input type="text" id="token" name="token" 
+                           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
+                                  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                           placeholder="Token" />
+                    @error('token')
                         <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
                     @enderror
                 </div>
-                <div class="mb-5">
-                    <label for="username" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your username</label>
-                    <input type="username" id="username" name="username" value="{{ old('username') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Username" required />
-                    @error('username')
-                        <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
-                    @enderror
-                </div>
-                <div class="mb-5">
-                    <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your password</label>
-                    <input type="password" id="password" name="password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Password" />
-                    @error('password')
-                        <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
-                    @enderror
-                </div>
-
+            
+                <!-- Save checkbox -->
                 <div class="flex items-start mb-5">
                     <div class="flex items-center h-5">
-                        <input id="save-hidden" name="save" type="hidden" value="0" class="w-4 h-4 border border-gray-300 rounded-sm bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" />
-                        <input id="save" name="save" type="checkbox" value="1" class="w-4 h-4 border border-gray-300 rounded-sm bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" />
+                        <input id="save-hidden" name="save" type="hidden" value="0" />
+                        <input id="save" name="save" type="checkbox" value="1"
+                               class="w-4 h-4 border border-gray-300 rounded-sm bg-gray-50 focus:ring-3 focus:ring-blue-300 
+                                      dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" />
                     </div>
                     <label for="save" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Save profile</label>
                 </div>
-
-                <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
-
+            
+                <!-- Submit button -->
+                <button type="submit"
+                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm 
+                               w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    Submit
+                </button>
             </form>
+            
         </div>
 
         <!-- Right: Past Logins -->
@@ -80,9 +108,8 @@
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
-                                <th scope="col" class="px-6 py-3">Username</th>
                                 <th scope="col" class="px-6 py-3">IP Address</th>
-                                <th scope="col" class="px-6 py-3">Router's Identity</th>
+                                <th scope="col" class="px-6 py-3">Port</th>
                                 <th scope="col" class="px-6 py-3"></th> 
                                 <th scope="col" class="px-6 py-3"></th> 
                             </tr>
@@ -92,16 +119,15 @@
                             
 
                                 <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200">
-                                    <td class="px-6 py-4">{{ $profile->username }}</td>
                                     <td class="px-6 py-4">{{ $profile->address }}</td>
-                                    <td class="px-6 py-4">{{ $profile->identity }}</td>
+                                    <td class="px-6 py-4">{{ $profile->port }}</td>
                                     <td class="px-6 py-4">
                                         
                                         <form action="{{ route('login.submit') }}" method="POST">
                                             @csrf
-                                            <input type="hidden" name="username" value="{{ $profile->username }}" />
+                                            <input type="hidden" name="port" value="{{ $profile->port }}" />
                                             <input type="hidden" name="address" value="{{ $profile->address }}" />
-                                            <input type="hidden" name="password" value="{{ $profile->password }}" />
+                                            <input type="hidden" name="token" value="{{ $profile->token }}" />
                                             <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                                 Login 
                                             </button>
