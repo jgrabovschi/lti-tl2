@@ -22,7 +22,7 @@ Route::delete('/profiles/{profile}', [LoginController::class, 'deleteProfile'])-
 Route::middleware(CheckSessionAccess::class)->group(function () {
     // Interfaces
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('showDashboard');
-    Route::post('/interfaces', [InterfaceController::class, 'download'])->name('downloadInterfaces');
+    Route::post('/dashboard', [DashboardController::class, 'download'])->name('downloadResources');
     Route::get('/interfaces/wireless', [InterfaceController::class, 'wireless'])->name('showInterfacesWireless');
     Route::post('/interfaces/wireless', [InterfaceController::class, 'downloadWireless'])->name('downloadWireless');
     Route::get('/interfaces/bridge', [InterfaceController::class, 'bridge'])->name('showInterfacesBridge');
