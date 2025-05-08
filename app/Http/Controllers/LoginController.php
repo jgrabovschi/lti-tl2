@@ -84,8 +84,7 @@ class LoginController extends Controller
             ]);
            
         }
-        dd("yay");
-        return redirect()->route('showInterfaces');
+        return redirect()->route('showDashboard');
     }
 
     public function logout()

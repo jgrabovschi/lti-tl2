@@ -16,7 +16,7 @@ class CheckSessionAccess
     public function handle(Request $request, Closure $next): Response
     {
         // Check if session has the necessary data
-        if (session()->has('username') && session()->has('address')) {
+        if (session()->has('token') && session()->has('address') && session()->has('port')) {
             return $next($request); // Allow access if session data is available
         }
 

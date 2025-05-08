@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
     
-        <title>MikroTik Controller</title>
+        <title>Kubernetes Controller</title>
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet"/>
@@ -27,11 +27,11 @@
                     </svg>
                 </button>
                 
-                <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">MikroTik Controller</span>
+                <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Kubernetes Controller</span>
                 
                 </div>
                 
-                <p class="text-gray-500 dark:text-gray-400">You are logged in as <b class="text-gray-700 dark:text-gray-200">{{ session('username') }}</b> on <b class="text-gray-700 dark:text-gray-200">{{ session('address') }} ({{ session('identity') }})</b></p>
+                <p class="text-gray-500 dark:text-gray-400">You are logged in at <b class="text-gray-700 dark:text-gray-200">{{ session('address') }}</b></p>
             </div>
             </div>
         </nav>
@@ -39,7 +39,7 @@
         <aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 lg:translate-x-0 dark:bg-gray-800 dark:border-gray-700" aria-label="Sidebar">
             <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
                 <ul class="space-y-2 font-medium">               
-                <li>
+                {{-- <li>
                     <button type="button" onclick="document.getElementById('dropdown-example').classList.toggle('hidden')" id="dropdown-button" class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
                         <svg aria-hidden="true" class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor" id="dropdown-button">
                             <path d="m680-240-56-56 182-184-182-184 56-56 240 240-240 240Zm-400 0L40-480l240-240 56 56-182 184 182 184-56 56Zm40-200q-17 0-28.5-11.5T280-480q0-17 11.5-28.5T320-520q17 0 28.5 11.5T360-480q0 17-11.5 28.5T320-440Zm160 0q-17 0-28.5-11.5T440-480q0-17 11.5-28.5T480-520q17 0 28.5 11.5T520-480q0 17-11.5 28.5T480-440Zm160 0q-17 0-28.5-11.5T600-480q0-17 11.5-28.5T640-520q17 0 28.5 11.5T680-480q0 17-11.5 28.5T640-440Z"/>
@@ -62,7 +62,7 @@
                             <a href="{{route('showInterfacesBridge')}}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Bridge</a>
                         </li>
                     </ul>
-                </li>
+                </li> --}}
                 <li>
                     <a href="{{route('showSecurityProfiles')}}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                         <svg class="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">

@@ -6,12 +6,13 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\WirelessController;
 use App\Http\Controllers\DnsController;
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DhcpController;
 use App\Http\Controllers\WireguardController;
 use App\Http\Middleware\CheckSessionAccess;
 use App\Policies\AccessPolicy;
 use Illuminate\Support\Facades\Route;
-
+use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 Route::get('/', [LoginController::class, 'index'])->name('login');
 Route::post('/', [LoginController::class, 'login'])->name('login.submit');
@@ -20,7 +21,7 @@ Route::delete('/profiles/{profile}', [LoginController::class, 'deleteProfile'])-
 
 Route::middleware(CheckSessionAccess::class)->group(function () {
     // Interfaces
-    Route::get('/interfaces', [InterfaceController::class, 'index'])->name('showInterfaces');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('showDashboard');
     Route::post('/interfaces', [InterfaceController::class, 'download'])->name('downloadInterfaces');
     Route::get('/interfaces/wireless', [InterfaceController::class, 'wireless'])->name('showInterfacesWireless');
     Route::post('/interfaces/wireless', [InterfaceController::class, 'downloadWireless'])->name('downloadWireless');
