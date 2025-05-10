@@ -12,39 +12,28 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        
         $client = new Client([
             'verify' => false
         ]);
-        $res = $client->get('https://' . session('address') . ': ' . session('port') . '/apis/metrics.k8s.io/v1beta1/nodes', ['headers' => 
+        $res = $client->get('https://' . session('address') . ':' . session('port') . '/apis/metrics.k8s.io/v1beta1/nodes', ['headers' => 
         [
             'Authorization' => "Bearer " . session('token'),
             'Accept' => 'application/json',
         ]]);
 
-        $data = json_decode($res->getBody(), true);
+        $dataNodes = json_decode($res->getBody(), true);
 
-        return view('dashboard')->with('metrics', $data);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function download()
-    {
-        $client = new Client([
-            'verify' => false
-        ]);
-        $res = $client->get('https://' . session('address') . ': ' . session('port') . '/apis/metrics.k8s.io/v1beta1/nodes', ['headers' => 
+        $res = $client->get('https://' . session('address') . ':' . session('port') . '/apis/metrics.k8s.io/v1beta1/pods', ['headers' => 
         [
             'Authorization' => "Bearer " . session('token'),
             'Accept' => 'application/json',
         ]]);
 
-        $tempFilePath = storage_path('app/temp.json');
-        file_put_contents($tempFilePath, $res->getBody());
+        $dataPods = json_decode($res->getBody(), true);
 
-        // Return the file as a downloadable response
-        return response()->download($tempFilePath, 'resources.json')->deleteFileAfterSend(true);
+        return view('dashboard.index')->with('metricsNodes', $dataNodes)
+            ->with('metricsPods', $dataPods);
     }
 
 }

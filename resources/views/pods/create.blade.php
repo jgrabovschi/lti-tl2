@@ -5,12 +5,12 @@
 <div class="flex justify-center">
     <div class="block p-6  w-md bg-white border border-gray-200 rounded-lg shadow-sm  dark:bg-gray-800 dark:border-gray-700">
     
-        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">New Security Profile</h5>
-        <p class="font-normal text-gray-700 dark:text-gray-400">Here you will create a new security profile using WPA2-PSK.</p>
+        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">New Pod</h5>
+        <p class="font-normal text-gray-700 dark:text-gray-400">Here you will create a new pod in the cluster.</p>
     
     </div>
 </div>
-<form method="GET" action="{{ route('showSecurityProfiles') }}">
+<form method="GET" action="{{ route('showPods') }}">
     
     <button type="sumbit" class="mt-4 text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 ">
         Back
@@ -30,9 +30,10 @@
         <div class="ms-3 text-sm font-normal">{{ $message }}</div>
     </div>
     @enderror
-    <form method="POST" class="max-w-sm mx-auto" action="{{ route('storeSecurity') }}">
+    <form method="POST" class="max-w-sm mx-auto" action="{{ route('storePod') }}">
         @csrf
         @method('PUT')
+        
         <div class="mb-5">
             <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
             <input type="text" name="name" id="name" value="{{ old('name', '') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="" />
@@ -40,10 +41,34 @@
                 <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
             @enderror
         </div>
+
         <div class="mb-5">
-            <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
-            <input type="name" name="password" id="password" value="{{ old('password', '') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="" />
-            @error('password')
+            <label for="namespace" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Namespace</label>
+            <select name="namespace" id="namespace" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                @foreach ($namespaces as $namespace)
+                    <option value="{{ $namespace['metadata']['name'] }}" {{ old('namespace') === $namespace['metadata']['name'] ? 'selected' : '' }}>
+                        {{ $namespace['metadata']['name'] }}
+                    </option>
+                @endforeach
+            </select>
+        
+            @error('namespace')
+                <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="mb-5">
+            <label for="image" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Image</label>
+            <input type="text" name="image" id="image" value="{{ old('image', '') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="" />
+            @error('image')
+                <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="mb-5">
+            <label for="port" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Ports<div class="text-xs text-slate-500 dark:text-slate-300">Specify more separated by , (Example: 80,443)</div></label>
+            <input type="text" name="port" id="port" value="{{ old('port', '') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="" />
+            @error('image')
                 <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
             @enderror
         </div>
