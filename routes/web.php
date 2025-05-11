@@ -4,6 +4,7 @@
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NamespaceController;
+use App\Http\Controllers\DeploymentController;
 use App\Http\Controllers\NodeController;
 use App\Http\Controllers\PodController;
 use App\Http\Middleware\CheckSessionAccess;
@@ -37,6 +38,14 @@ Route::middleware(CheckSessionAccess::class)->group(function () {
     Route::get('/pods/create', [PodController::class, 'create'])->name('createPod');
     Route::put('/pods/create', [PodController::class, 'store'])->name('storePod');
     Route::delete('/namespaces/{namespace}/pods/{name}', [PodController::class, 'destroy'])->name('deletePod');
+
+
+    // Pods
+    Route::get('/deployment', [DeploymentController::class, 'index'])->name('showDeployment');
+    Route::post('/deployment', [DeploymentController::class, 'download'])->name('downloadDeployment');
+    Route::get('/deployment/create', [DeploymentController::class, 'create'])->name('createDeployment');
+    Route::put('/deployment/create', [DeploymentController::class, 'store'])->name('storeDeployment');
+    Route::delete('/namespaces/{namespace}/deployment/{name}', [DeploymentController::class, 'destroy'])->name('deleteDeployment');
 
 
 
