@@ -30,7 +30,7 @@ class DashboardController extends Controller
         }
         catch (RequestException $e) {
         // this usualy happens when the cluster is still starting        
-           return redirect()->back()->withErrors('global', 'Cluster is still starting, please wait a few moments and try again.');
+           return redirect()->back()->withErrors(['global' => 'Cluster is still starting, please wait a few moments and try again.']);
         }
 
         $metricsPods = json_decode($resPods->getBody(), true);

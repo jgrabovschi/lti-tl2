@@ -39,6 +39,7 @@
             <tr>
                 <th class="px-6 py-3">Name</th>
                 <th class="px-6 py-3">Namespace</th>
+                <th class="px-6 py-3">Node</th>
                 <th class="px-6 py-3">Status</th>
                 <th class="px-6 py-3">Images</th>
                 <th class="px-6 py-3">Ports</th>
@@ -59,6 +60,7 @@
                 <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                     <td class="px-6 py-4">{{ $pod['metadata']['name'] ?? 'N/A' }}</td>
                     <td class="px-6 py-4">{{ $pod['metadata']['namespace'] ?? 'default' }}</td>
+                    <td class="px-6 py-4">{{ $pod['spec']['nodeName'] }}</td>
                     <td class="px-6 py-4">
                         <span class="px-2 py-1 text-xs font-semibold rounded {{ $statusColor }}">
                             {{ $status }}

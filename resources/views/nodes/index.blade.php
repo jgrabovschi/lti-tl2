@@ -23,7 +23,7 @@
                 <th class="px-6 py-3">Node Name</th>
                 <th class="px-6 py-3">OS</th>
                 <th class="px-6 py-3">Kernel</th>
-                <th class="px-6 py-3">Arch</th>
+                <th class="px-6 py-3">Architecture</th>
                 <th class="px-6 py-3">Kubelet</th>
                 <th class="px-6 py-3">Containerd</th>
                 <th class="px-6 py-3">CPU</th>
