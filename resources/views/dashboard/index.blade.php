@@ -64,77 +64,68 @@
 
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script>
-    const $data = @json($metricsNodes);
+    const cpuData = @json($cpuUsage);
+    const memData = @json($memoryUsage);
 
     google.charts.load('current', { packages: ['corechart'] });
     google.charts.setOnLoadCallback(drawCharts);
 
-    function parseCPU(nanoStr) {
-        return parseInt(nanoStr) / 1_000_000;
-    }
-
-    function parseMemory(kiStr) {
-        return parseInt(kiStr.replace('Ki', '')) / 1024;
-    }
-
     function drawCharts() {
-        const cpuDataArray = [['Node', 'CPU (millicores)']];
-        const memDataArray = [['Node', 'Memory (MiB)']];
+        const cpuArray = [['Node', 'CPU %', { role: 'tooltip', type: 'string' }]];
+        const memArray = [['Node', 'Memory %', { role: 'tooltip', type: 'string' }]];
 
-        $data.items.forEach(node => {
-            const name = node.metadata.name;
-            const cpu = parseCPU(node.usage.cpu);
-            const mem = parseMemory(node.usage.memory);
+        let cpuMax = 0, memMax = 0;
 
-            cpuDataArray.push([name, cpu]);
-            memDataArray.push([name, mem]);
+        cpuData.forEach(node => {
+            const tooltip = `${node.name}\n${node.percentage}%\n${node.used} millicores`;
+            cpuArray.push([node.name, node.percentage, tooltip]);
+            if (node.percentage > cpuMax) cpuMax = node.percentage;
         });
 
-        const darkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        memData.forEach(node => {
+            const tooltip = `${node.name}\n${node.percentage}%\n${node.used} MiB`;
+            memArray.push([node.name, node.percentage, tooltip]);
+            if (node.percentage > memMax) memMax = node.percentage;
+        });
 
-        const baseOptions = {
-            backgroundColor: darkMode ? '#1F2937' : '#fff',
-            titleTextStyle: { color: darkMode ? '#fff' : '#000' },
-            hAxis: {
-                titleTextStyle: { color: darkMode ? '#ccc' : '#000' },
-                textStyle: { color: darkMode ? '#ccc' : '#000' }
-            },
+        const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        const baseOptions = (maxVal, color) => ({
+            backgroundColor: dark ? '#1F2937' : '#fff',
+            titleTextStyle: { color: dark ? '#fff' : '#000' },
+            hAxis: { textStyle: { color: dark ? '#ccc' : '#000' } },
             vAxis: {
-                titleTextStyle: { color: darkMode ? '#ccc' : '#000' },
-                textStyle: { color: darkMode ? '#ccc' : '#000' }
+                minValue: 0,
+                maxValue: maxVal < 20 ? 20 : 100,
+                textStyle: { color: dark ? '#ccc' : '#000' },
             },
             legend: 'none',
-            chartArea: {
-                width: '80%',
-                height: '70%'
-            }
-        };
+            chartArea: { width: '80%', height: '70%' },
+            colors: [color],
+            
+        });
 
         const cpuOptions = {
-            ...baseOptions,
-            colors: ['#3B82F6'],
+            ...baseOptions(cpuMax, '#3B82F6'),
         };
+        const memOptions = baseOptions(memMax, '#10B981');
 
-        const memOptions = {
-            ...baseOptions,
-            colors: ['#10B981'],
-        };
+        const cpuChart = google.visualization.arrayToDataTable(cpuArray);
+        const memChart = google.visualization.arrayToDataTable(memArray);
 
-        const cpuData = google.visualization.arrayToDataTable(cpuDataArray);
-        const memData = google.visualization.arrayToDataTable(memDataArray);
-
-        new google.visualization.ColumnChart(document.getElementById('cpu_chart')).draw(cpuData, cpuOptions);
-        new google.visualization.ColumnChart(document.getElementById('memory_chart')).draw(memData, memOptions);
+        new google.visualization.ColumnChart(document.getElementById('cpu_chart')).draw(cpuChart, cpuOptions);
+        new google.visualization.ColumnChart(document.getElementById('memory_chart')).draw(memChart, memOptions);
     }
 
-    let resizeTimeout;
     window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-            drawCharts();
-        }, 100);
+        clearTimeout(window.resizing);
+        window.resizing = setTimeout(drawCharts, 100);
     });
-
 </script>
+
+
+
+
+
 
 @endsection
