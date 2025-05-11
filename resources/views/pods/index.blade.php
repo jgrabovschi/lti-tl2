@@ -57,7 +57,7 @@
                         default => 'text-gray-700 bg-gray-200',
                     };
                 @endphp
-                <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200">
                     <td class="px-6 py-4">{{ $pod['metadata']['name'] ?? 'N/A' }}</td>
                     <td class="px-6 py-4">{{ $pod['metadata']['namespace'] ?? 'default' }}</td>
                     <td class="px-6 py-4">{{ $pod['spec']['nodeName'] }}</td>
