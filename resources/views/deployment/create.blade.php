@@ -18,7 +18,9 @@
 
 </form>
 
-<div class="w-full md:w-1/2 lg:w-1/3 p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+<div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+
+    {{-- Toast de erro global --}}
     @error('global')
     <div id="toast-danger" class="flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg dark:text-gray-400 dark:bg-gray-800" role="alert">
         <div class="inline-flex items-center justify-center shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200">
@@ -30,69 +32,85 @@
         <div class="ms-3 text-sm font-normal">{{ $message }}</div>
     </div>
     @enderror
-    <form method="POST" class="max-w-sm mx-auto" action="{{ route('storeDeployment') }}">
+
+    {{-- Formulário --}}
+    <form method="POST" action="{{ route('storeDeployment') }}" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         @csrf
         @method('PUT')
-        
-        <div class="mb-5">
-            <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
-            <input type="text" name="name" id="name" value="{{ old('name', '') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="" />
-            @error('name')
-                <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
-            @enderror
+
+        <input type="hidden" name="numberContainer" value="{{$numberContainer}}">
+        {{-- Campos gerais --}}
+        <div class="col-span-full">
+            <h2 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Informações Gerais</h2>
         </div>
 
-        <div class="mb-5">
+        <div>
+            <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+            <input type="text" name="name" id="name" value="{{ old('name', '') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+            @error('name') <div class="text-red-500 text-sm mt-2">{{ $message }}</div> @enderror
+        </div>
+
+        <div>
             <label for="namespace" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Namespace</label>
-            <select name="namespace" id="namespace" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            <select name="namespace" id="namespace" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                 @foreach ($namespaces as $namespace)
                     <option value="{{ $namespace['metadata']['name'] }}" {{ old('namespace') === $namespace['metadata']['name'] ? 'selected' : '' }}>
                         {{ $namespace['metadata']['name'] }}
                     </option>
                 @endforeach
             </select>
-        
-            @error('namespace')
-                <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
-            @enderror
+            @error('namespace') <div class="text-red-500 text-sm mt-2">{{ $message }}</div> @enderror
         </div>
 
-        <div class="mb-5">
-            <label for="image" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Image</label>
-            <input type="text" name="image" id="image" value="{{ old('image', '') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="" />
-            @error('image')
-                <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div class="mb-5">
-            <label for="port" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Ports<div class="text-xs text-slate-500 dark:text-slate-300">Specify more separated by , (Example: 80,443)</div></label>
-            <input type="text" name="port" id="port" value="{{ old('port', '') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="" />
-            @error('image')
-                <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div class="mb-5">
+        <div>
             <label for="labelName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Label Name</label>
-            <input type="text" name="labelName" id="labelName" value="{{ old('labelName', '') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="" />
-            @error('labelName')
-                <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
-            @enderror
+            <input type="text" name="labelName" id="labelName" value="{{ old('labelName', '') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+            @error('labelName') <div class="text-red-500 text-sm mt-2">{{ $message }}</div> @enderror
         </div>
 
-        <div class="mb-5">
+        <div>
             <label for="replicas" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Replicas</label>
-            <input type="number" name="replicas" id="replicas" value="{{ old('replicas', '') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="" />
-            @error('replicas')
-                <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
-            @enderror
+            <input type="number" name="replicas" id="replicas" value="{{ old('replicas', '') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+            @error('replicas') <div class="text-red-500 text-sm mt-2">{{ $message }}</div> @enderror
         </div>
 
-        <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Save</button>
+        {{-- Containers --}}
+        <div class="col-span-full">
+            <h2 class="text-lg font-semibold mb-4 mt-6 text-gray-800 dark:text-white">Containers</h2>
+        </div>
+
+        @for($i = 1; $i <= $numberContainer; $i++)
+            <div class="p-4 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+                <h4 class="text-md font-semibold mb-4 text-gray-800 dark:text-white">Container {{ $i }}</h4>
+
+                <div class="mb-4">
+                    <label for="{{ 'nameContainer_' . $i }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+                    <input type="text" name="{{ 'nameContainer_' . $i }}" id="{{ 'nameContainer_' . $i }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                    @error('nameContainer_' . $i) <div class="text-red-500 text-sm mt-2">{{ $message }}</div> @enderror
+                </div>
+
+                <div class="mb-4">
+                    <label for="{{ 'imageContainer_' . $i }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Image</label>
+                    <input type="text" name="{{ 'imageContainer_' . $i }}" id="{{ 'imageContainer_' . $i }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                    @error('imageContainer_' . $i) <div class="text-red-500 text-sm mt-2">{{ $message }}</div> @enderror
+                </div>
+
+                <div>
+                    <label for="{{ 'port_' . $i }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Ports <span class="text-xs text-slate-500 block dark:text-slate-300">Specify more separated by , (Example: 80,443)</span></label>
+                    <input type="text" name="{{ 'port_' . $i }}" id="{{ 'port_' . $i }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                    @error('port_' . $i) <div class="text-red-500 text-sm mt-2">{{ $message }}</div> @enderror
+                </div>
+            </div>
+        @endfor
+
+        <div class="col-span-full">
+            <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-6 py-2 mt-4 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                Save
+            </button>
+        </div>
     </form>
-    
 </div>
+
 
 
 

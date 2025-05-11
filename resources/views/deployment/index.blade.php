@@ -28,11 +28,18 @@
         Download JSON
     </button>
 </form>
-<form method="GET" action="{{ route('createDeployment') }}">
-    <button type="submit" class="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
-        Create Deployment
-    </button>
-</form>
+<div class="block p-6  w-md bg-white border border-gray-200 rounded-lg shadow-sm  dark:bg-gray-800 dark:border-gray-700">
+    <form method="GET" action="{{ route('createDeployment') }}">
+        <div class="mb-4">
+            <label for="number" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Number of containers to add:</label>
+            <input type="number" id="number" name="numberOfContainers" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+        </div>
+        <button type="submit" class="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+            Create Deployment
+        </button>
+    </form>
+</div>
+
 @if (!empty($deploys))
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-4">
     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">

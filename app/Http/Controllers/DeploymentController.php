@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use Illuminate\Support\Str;
 
 class DeploymentController extends Controller
 {
@@ -20,7 +21,7 @@ class DeploymentController extends Controller
         ]]);
 
         $dataDeployment = json_decode($res->getBody(), true)['items'];
-
+        
         return view('deployment.index')->with('deploys', $dataDeployment);
     }
 
@@ -45,8 +46,13 @@ class DeploymentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
+
+        $request->validate([
+            'numberOfContainers' => ['required','numeric','min:1'],
+        ]);
+        
         $client = new Client([
             'verify' => false
         ]);
@@ -60,7 +66,7 @@ class DeploymentController extends Controller
 
         $namespaces = json_decode($res->getBody(), true)['items'];
 
-        return view('deployment.create')->with('namespaces', $namespaces);
+        return view('deployment.create')->with('namespaces', $namespaces)->with('numberContainer', $request->numberOfContainers);
     }
 
     /**
@@ -68,17 +74,66 @@ class DeploymentController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $rules = [];
+
+        $containers = [];
+        for($i = 0; $i < $request->numberContainer; $i++){
+            $containers[$i] = [];
+        }
+        $rules['name'] = 'required|string';
+        $rules['namespace'] = 'required|string';
+        $rules['replicas'] = 'required|numeric';
+        $rules['labelName'] = 'required|string';
+        $rules['numberContainer'] = 'required|numeric';
+        foreach ($request->input() as $key => $value) {
+            if (Str::contains($key, 'nameContainer_')) {
+                
+                $rules[$key] = 'required|string'; 
+                $aux = explode('_', $key);
+                $containers[((int) $aux[1]) - 1]['name'] = $value;
+                
+
+            }elseif(Str::contains($key, 'imageContainer_')){
+                $rules[$key] = 'required|string'; 
+                $aux = explode('_', $key);
+                $containers[((int) $aux[1]) -1]['image'] = $value;
+                 
+            }elseif(Str::contains($key, 'port_')){
+                $rules[$key] = 'required|string'; 
+                $aux = explode('_', $key);
+                $containers[((int) $aux[1]) - 1]['port'] = explode(',', $value);
+                
+            }            
+
+            
+        }
+        $request->validate($rules);
+
+        $containersJson = array_map(function ($container) {
+            return [
+                'name' => $container['name'],
+                'image' => $container['image'],
+                'ports' => array_map(function ($port) {
+                    return ['containerPort' => (int)$port];
+                }, $container['port'] ?? []),
+            ];
+        }, $containers);
+        //dd($containersJson);
+
+        /*$request->validate([
             'name' => 'required|string',
             'namespace' => 'required|string',
             'image' => 'required|string',
             'port' => 'required|string',
-            'replicas' => 'required|integer',
+            'replicas' => 'required|numeric',
             'labelName' => 'required|string',
-        ]);
-        //preciso deployment à mesma
-        $ports = explode(',', $request->port);
-    
+            'numberContainer' => 'required|numeric',
+        ]);*/
+        //preciso name_container
+        //request image
+        //port
+        //$ports = explode(',', $request->port);
+        
         $client = new Client([
             'verify' => false
         ]);
@@ -96,7 +151,7 @@ class DeploymentController extends Controller
                         'name' => $request->name,
                     ],
                     'spec' => [
-                        'replicas' => $request->replicas,
+                        'replicas' => (int) $request->replicas,
                         'selector' => [
                             'matchLabels' => [
                                 'app' => $request->labelName
@@ -109,15 +164,7 @@ class DeploymentController extends Controller
                                 ],
                             ],
                             'spec' => [
-                                'containers' =>[
-                                    [
-                                        'name' => $request->name,
-                                        'image' => $request->image,
-                                        'ports' => array_map(function ($port) {
-                                            return ['containerPort' => (int)$port];
-                                        }, $ports),
-                                    ],
-                                ],
+                                'containers' => $containersJson,
                             ],
                         ],
                     ],
