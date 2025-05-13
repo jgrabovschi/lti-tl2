@@ -5,6 +5,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NamespaceController;
 use App\Http\Controllers\DeploymentController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\NodeController;
 use App\Http\Controllers\PodController;
 use App\Http\Middleware\CheckSessionAccess;
@@ -40,13 +41,20 @@ Route::middleware(CheckSessionAccess::class)->group(function () {
     Route::delete('/namespaces/{namespace}/pods/{name}', [PodController::class, 'destroy'])->name('deletePod');
 
 
-    // Pods
+    // Deployment
     Route::get('/deployment', [DeploymentController::class, 'index'])->name('showDeployment');
     Route::post('/deployment', [DeploymentController::class, 'download'])->name('downloadDeployment');
     Route::get('/deployment/create', [DeploymentController::class, 'create'])->name('createDeployment');
     Route::put('/deployment/create', [DeploymentController::class, 'store'])->name('storeDeployment');
     Route::delete('/namespaces/{namespace}/deployment/{name}', [DeploymentController::class, 'destroy'])->name('deleteDeployment');
 
+    // Service && Ingress
+    Route::get('/service', [ServiceController::class, 'index'])->name('showService');
+    Route::post('/service', [ServiceController::class, 'downloadService'])->name('downloadService');
+    Route::post('/ingress', [ServiceController::class, 'downloadIngress'])->name('downloadIngress');
+    Route::get('/service/create', [ServiceController::class, 'create'])->name('createService');
+    Route::put('/service/create', [ServiceController::class, 'store'])->name('storeService');
+    Route::delete('/namespaces/{namespace}/deployment/{name}', [ServiceController::class, 'destroy'])->name('deleteService');
 
 
 

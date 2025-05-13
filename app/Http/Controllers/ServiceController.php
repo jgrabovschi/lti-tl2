@@ -7,40 +7,67 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Str;
 
-class DeploymentController extends Controller
+class ServiceController extends Controller
 {
     public function index()
     {
         $client = new Client([
             'verify' => false
         ]);
-        $res = $client->get('https://' . session('address') . ':' . session('port') . '/apis/apps/v1/deployments', ['headers' => 
+        $resServices = $client->get('https://' . session('address') . ':' . session('port') . '/api/v1/services', ['headers' => 
         [
             'Authorization' => "Bearer " . session('token'),
             'Accept' => 'application/json',
         ]]);
 
-        $dataDeployment = json_decode($res->getBody(), true)['items'];
-        //dd($dataDeployment);
-        return view('deployment.index')->with('deploys', $dataDeployment);
+        $resIngress = $client->get('https://' . session('address') . ':' . session('port') . '/apis/networking.k8s.io/v1/ingresses', ['headers' => 
+        [
+            'Authorization' => "Bearer " . session('token'),
+            'Accept' => 'application/json',
+        ]]);
+
+        $dataServices = json_decode($resServices->getBody(), true)['items'];
+        $dataIngress = json_decode($resIngress->getBody(), true)['items'];
+        //dd($dataIngress);
+        return view('service.index')->with('services', $dataServices)->with('ingress', $dataIngress);
     }
 
-    public function download()
+    public function downloadService()
     {
         $client = new Client([
             'verify' => false
         ]);
-        $res = $client->get('https://' . session('address') . ':' . session('port') . '/apis/apps/v1/deployments', ['headers' => 
+        $resServices = $client->get('https://' . session('address') . ':' . session('port') . '/api/v1/services', ['headers' => 
+        [
+            'Authorization' => "Bearer " . session('token'),
+            'Accept' => 'application/json',
+        ]]);
+
+
+        $tempFilePath = storage_path('app/temp.json');
+        file_put_contents($tempFilePath, $resServices->getBody());
+
+        // Return the file as a downloadable response
+        return response()->download($tempFilePath, 'services.json')->deleteFileAfterSend(true);
+    }
+
+    public function downloadIngress()
+    {
+        $client = new Client([
+            'verify' => false
+        ]);
+
+        $resIngress = $client->get('https://' . session('address') . ':' . session('port') . '/apis/networking.k8s.io/v1/ingresses', ['headers' => 
         [
             'Authorization' => "Bearer " . session('token'),
             'Accept' => 'application/json',
         ]]);
 
         $tempFilePath = storage_path('app/temp.json');
-        file_put_contents($tempFilePath, $res->getBody());
+        file_put_contents($tempFilePath, $resIngress->getBody());
 
         // Return the file as a downloadable response
-        return response()->download($tempFilePath, 'deployments.json')->deleteFileAfterSend(true);
+        return response()->download($tempFilePath, 'ingresses.json')->deleteFileAfterSend(true);
     }
 
     /**
@@ -50,7 +77,7 @@ class DeploymentController extends Controller
     {
 
         $request->validate([
-            'numberOfContainers' => ['required','numeric','min:1'],
+            'numberOfPorts' => ['required','numeric','min:1'],
         ]);
         
         $client = new Client([
@@ -66,7 +93,7 @@ class DeploymentController extends Controller
 
         $namespaces = json_decode($res->getBody(), true)['items'];
 
-        return view('deployment.create')->with('namespaces', $namespaces)->with('numberContainer', $request->numberOfContainers);
+        return view('service.create')->with('namespaces', $namespaces)->with('numberOfPorts', $request->numberOfPorts);
     }
 
     /**
