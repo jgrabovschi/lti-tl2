@@ -149,12 +149,15 @@ class DeploymentController extends Controller
                     'kind' => 'Deployment',
                     'metadata' => [
                         'name' => $request->name,
+                        //'labels' => [
+                                    //'app' => $request->labelName 
+                                //],
                     ],
                     'spec' => [
                         'replicas' => (int) $request->replicas,
                         'selector' => [
                             'matchLabels' => [
-                                'app' => $request->labelName
+                                'app' => $request->labelName,
                             ],
                         ],
                         'template' => [
@@ -174,7 +177,7 @@ class DeploymentController extends Controller
             
         }
         catch (\Exception $e) {
-            
+            dd($e->getResponse()->getBody()->getContents());
             return redirect()->route('createDeployment')->withErrors(['global' =>  $e->getMessage()]);
         }
 

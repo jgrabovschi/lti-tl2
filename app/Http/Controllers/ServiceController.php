@@ -103,97 +103,75 @@ class ServiceController extends Controller
     {
         $rules = [];
 
-        $containers = [];
+        $ports = [];
         for($i = 0; $i < $request->numberContainer; $i++){
-            $containers[$i] = [];
+            $ports[$i] = [];
         }
         $rules['name'] = 'required|string';
         $rules['namespace'] = 'required|string';
-        $rules['replicas'] = 'required|numeric';
-        $rules['labelName'] = 'required|string';
-        $rules['numberContainer'] = 'required|numeric';
+        $rules['selector'] = 'required|string';
+        $rules['numberOfPorts'] = 'required|numeric';
         foreach ($request->input() as $key => $value) {
-            if (Str::contains($key, 'nameContainer_')) {
+            if (Str::contains($key, 'namePort_')) {
                 
                 $rules[$key] = 'required|string'; 
                 $aux = explode('_', $key);
-                $containers[((int) $aux[1]) - 1]['name'] = $value;
+                $ports[((int) $aux[1]) - 1]['name'] = $value;
                 
 
-            }elseif(Str::contains($key, 'imageContainer_')){
+            }elseif(Str::contains($key, 'protocolPort_')){
                 $rules[$key] = 'required|string'; 
                 $aux = explode('_', $key);
-                $containers[((int) $aux[1]) -1]['image'] = $value;
+                $ports[((int) $aux[1]) -1]['protocol'] = $value;
                  
             }elseif(Str::contains($key, 'port_')){
                 $rules[$key] = 'required|string'; 
                 $aux = explode('_', $key);
-                $containers[((int) $aux[1]) - 1]['port'] = explode(',', $value);
+                $ports[((int) $aux[1]) - 1]['port'] = $value;
                 
-            }            
+            }elseif(Str::contains($key, 'targetPort_')){
+                $rules[$key] = 'required|string'; 
+                $aux = explode('_', $key);
+                $ports[((int) $aux[1]) - 1]['targetPort'] = $value;
+                
+            }          
 
             
         }
+        //dd($request);
         $request->validate($rules);
 
-        $containersJson = array_map(function ($container) {
+        $portsJson = array_map(function ($port) {
             return [
-                'name' => $container['name'],
-                'image' => $container['image'],
-                'ports' => array_map(function ($port) {
-                    return ['containerPort' => (int)$port];
-                }, $container['port'] ?? []),
+                'name' => $port['name'],
+                'protocol' => $port['protocol'],
+                'port' => (int) $port['port'],
+                'targetPort' => (int) $port['targetPort'],
             ];
-        }, $containers);
-        //dd($containersJson);
-
-        /*$request->validate([
-            'name' => 'required|string',
-            'namespace' => 'required|string',
-            'image' => 'required|string',
-            'port' => 'required|string',
-            'replicas' => 'required|numeric',
-            'labelName' => 'required|string',
-            'numberContainer' => 'required|numeric',
-        ]);*/
-        //preciso name_container
-        //request image
-        //port
-        //$ports = explode(',', $request->port);
+        }, $ports);
         
         $client = new Client([
             'verify' => false
         ]);
+
         try{
-            $client->post('https://' . session('address') . ':' . session('port') . '/apis/apps/v1/namespaces/' . $request->namespace . '/deployments', [
+            $client->post('https://' . session('address') . ':' . session('port') . '/api/v1/namespaces/' . $request->namespace . '/services', [
                 'headers' => [
                     'Authorization' => "Bearer " . session('token'),
                     'Accept' => 'application/json',
                     'Content-Type' => 'application/json',
                 ],
                 'json' => [
-                    'apiVersion' => 'apps/v1',
-                    'kind' => 'Deployment',
+                    'apiVersion' => 'v1',
+                    'kind' => 'Service',
                     'metadata' => [
                         'name' => $request->name,
                     ],
                     'spec' => [
-                        'replicas' => (int) $request->replicas,
                         'selector' => [
-                            'matchLabels' => [
-                                'app' => $request->labelName
-                            ],
+                            'app' => $request->labelName //aqui é o label dos outros containers dentro do spec/matchlabels
                         ],
-                        'template' => [
-                            'metadata' => [
-                                'labels' => [
-                                    'app' => $request->labelName 
-                                ],
-                            ],
-                            'spec' => [
-                                'containers' => $containersJson,
-                            ],
-                        ],
+                        'ports' => $portsJson,
                     ],
                 ],
             ]);
@@ -201,11 +179,11 @@ class ServiceController extends Controller
             
         }
         catch (\Exception $e) {
-            
-            return redirect()->route('createDeployment')->withErrors(['global' =>  $e->getMessage()]);
+            dd($e->getResponse()->getBody()->getContents());
+            return redirect()->route('createService')->withErrors(['global' =>  $e->getMessage()]);
         }
 
-        return redirect()->route('showDeployment')->with('success', 'Deployment ' . $request->input('name') . ' created successfully');
+        return redirect()->route('showService')->with('success', 'Deployment ' . $request->input('name') . ' created successfully');
     }
 
    
@@ -219,16 +197,16 @@ class ServiceController extends Controller
         ]);
 
         try {
-            $client->delete('https://' . session('address') . ':' . session('port') . '/apis/apps/v1/namespaces/' . $namespace . '/deployments/' . $name, [
+            $client->delete('https://' . session('address') . ':' . session('port') . '/api/v1/namespaces/' . $namespace . '/services/' . $name, [
                 'headers' => [
                     'Authorization' => "Bearer " . session('token'),
                     'Accept' => 'application/json',
                 ],
             ]);
         } catch (\Exception $e) {
-            return redirect()->route('showDeployment')->withErrors('global', 'Failed to delete deployment: ' . $e->getMessage());
+            return redirect()->route('showService')->withErrors('global', 'Failed to delete services: ' . $e->getMessage());
         }
 
-        return redirect()->route('showDeployment')->with('success', 'Deleting deployment:  ' . $name . '...');
+        return redirect()->route('showService')->with('success', 'Deleting service:  ' . $name . '...');
     }
 }
