@@ -29,7 +29,7 @@ class ServiceController extends Controller
         $dataServices = json_decode($resServices->getBody(), true)['items'];
         $dataIngress = json_decode($resIngress->getBody(), true)['items'];
         //dd($dataIngress);
-        return view('service.index')->with('services', $dataServices)->with('ingress', $dataIngress);
+        return view('service.index')->with('services', $dataServices)->with('ingresses', $dataIngress);
     }
 
     public function downloadService()
@@ -149,7 +149,44 @@ class ServiceController extends Controller
                 'targetPort' => (int) $port['targetPort'],
             ];
         }, $ports);
+
+        /*$rulesJson = [
+            'host' =>  session('address') . '.sslip.io.',
+            'http' =>[
+                
+            ]
+            ];*/
+        $rulesJson = array_map(function ($port) use ($request) {
+            return [
+                'path' => '/',
+                'pathType' => 'Prefix',
+                'backend' => [
+                    'service' => [
+                        'name' => $request->name,
+                        'port' => [
+                            'number' => (int) $port['port'],
+                        ]
+                    ]
+                ]
+            ];
+        }, $ports);
+
+        /*$rulesJson = array_map(function ($port) use ($request) {
+            return [
+                'path' => '/',
+                'pathType' => 'Prefix',
+                'backend' => [
+                    'service' => [
+                        'name' => $request->name,
+                        'port' => [
+                            'number' => (int) $port['port'],
+                        ]
+                    ]
+                ]
+            ];
+        }, $ports);*/
         
+        //dd($rulesJson);
         $client = new Client([
             'verify' => false
         ]);
@@ -175,6 +212,32 @@ class ServiceController extends Controller
                     ],
                 ],
             ]);
+
+            $client->post('https://' . session('address') . ':' . session('port') . '/apis/networking.k8s.io/v1/namespaces/' . $request->namespace . '/ingresses', [
+                'headers' => [
+                    'Authorization' => "Bearer " . session('token'),
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                ],
+                'json' => [
+                    'apiVersion' => 'networking.k8s.io/v1',
+                    'kind' => 'Ingress',
+                    'metadata' => [
+                        'name' => $request->name,
+                        'annotations' => [
+                            'nginx.ingress.kubernetes.io/rewrite-target' => '/'
+                        ],
+                    ],
+                    'spec' => [
+                        'rules' => [[
+                            'host' =>  $request->name. '.'.session('address') . '.sslip.io',
+                            'http' =>[
+                                'paths' => $rulesJson,
+                            ]
+                        ]]
+                    ],
+                ],
+            ]);
             
             
         }
@@ -190,6 +253,26 @@ class ServiceController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    public function destroyIngress(string $namespace, string $name)
+    {
+        $client = new Client([
+            'verify' => false
+        ]);
+
+        try {
+            $client->delete('https://' . session('address') . ':' . session('port') . '/apis/networking.k8s.io/v1/namespaces/' . $namespace . '/ingresses/' . $name, [
+                'headers' => [
+                    'Authorization' => "Bearer " . session('token'),
+                    'Accept' => 'application/json',
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return redirect()->route('showService')->withErrors('global', 'Failed to delete ingress: ' . $e->getMessage());
+        }
+
+        return redirect()->route('showService')->with('success', 'Deleting ingress:  ' . $name . '...');
+    }
+
     public function destroy(string $namespace, string $name)
     {
         $client = new Client([

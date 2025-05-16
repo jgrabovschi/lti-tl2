@@ -55,6 +55,7 @@ Route::middleware(CheckSessionAccess::class)->group(function () {
     Route::get('/service/create', [ServiceController::class, 'create'])->name('createService');
     Route::put('/service/create', [ServiceController::class, 'store'])->name('storeService');
     Route::delete('/namespaces/{namespace}/service/{name}', [ServiceController::class, 'destroy'])->name('deleteService');
+    Route::delete('/namespaces/{namespace}/ingress/{name}', [ServiceController::class, 'destroyIngress'])->name('deleteIngress');
 
 
 

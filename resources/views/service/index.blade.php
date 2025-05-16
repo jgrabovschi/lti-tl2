@@ -97,7 +97,7 @@
                         @endif
                     </td>
                     <td class="px-6 py-4">
-                        <form method="POST" action="{{ route('deleteService', ['name' => $service['metadata']['name'], 'namespace' => $service['metadata']['namespace']]) }}" onsubmit="return confirm('Are you sure you want to delete this pod?');">
+                        <form method="POST" action="{{ route('deleteService', ['name' => $service['metadata']['name'], 'namespace' => $service['metadata']['namespace']]) }}" onsubmit="return confirm('Are you sure you want to delete this ingress?');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="p-1 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition">
@@ -115,6 +115,65 @@
         <p class="text-gray-500">No Deployments found.</p>
     </div>
 @endif
+
+@if (!empty($ingresses))
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-4">
+    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+                <th class="px-6 py-3">Name</th>
+                <th class="px-6 py-3">Namespace</th>
+                <th class="px-6 py-3">Host</th>
+                <th class="px-6 py-3">Services</th>
+                <th class="px-6 py-3">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($ingresses as $ingress)
+                @php
+                /*
+                    $status = $pod['status']['phase'] ?? 'Unknown';
+                    $statusColor = match($status) {
+                        'Running' => 'text-green-700 bg-green-200',
+                        'Pending' => 'text-yellow-700 bg-yellow-200',
+                        'Failed' => 'text-red-700 bg-red-200',
+                        default => 'text-gray-700 bg-gray-200',
+                    };
+                */
+                @endphp
+                <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                    <td class="px-6 py-4">{{ $ingress['metadata']['name'] ?? 'N/A' }}</td>
+                    <td class="px-6 py-4">{{ $ingress['metadata']['namespace'] ?? 'default' }}</td>
+                    <td class="px-6 py-4">{{ $ingress['spec']['rules']['0']['host'] }}</td>
+                    <td class="px-6 py-4">
+                        @foreach ($ingress['spec']['rules']['0']['http']['paths'] as $path)
+                            @if (!empty($path))
+                                <span>
+                                Name: {{ $path['backend']['service']['name'] }} | Port: {{ $path['backend']['service']['port']['number'] }}                              
+                                </span><br>
+                            @endif
+                        @endforeach
+                    </td>
+                    <td class="px-6 py-4">
+                        <form method="POST" action="{{ route('deleteIngress', ['name' => $ingress['metadata']['name'], 'namespace' => $ingress['metadata']['namespace']]) }}" onsubmit="return confirm('Are you sure you want to delete this ingress?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="p-1 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>    
+</div>
+@else
+    <div class="text-center mt-4">
+        <p class="text-gray-500">No Ingresses found.</p>
+    </div>
+@endif
+
 <script>
 
     document.addEventListener('DOMContentLoaded', () => {
