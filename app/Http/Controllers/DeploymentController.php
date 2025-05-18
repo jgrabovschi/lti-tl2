@@ -149,9 +149,9 @@ class DeploymentController extends Controller
                     'kind' => 'Deployment',
                     'metadata' => [
                         'name' => $request->name,
-                        //'labels' => [
-                                    //'app' => $request->labelName 
-                                //],
+                        'labels' => [
+                                    'app' => $request->labelName 
+                                ],
                     ],
                     'spec' => [
                         'replicas' => (int) $request->replicas,

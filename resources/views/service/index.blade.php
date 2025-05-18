@@ -84,7 +84,7 @@
                         @foreach ($service['spec']['ports'] as $ports)
                             @if (!empty($ports))
                                 <span>
-                                Name: {{ $ports['name'] }} | Protocol: {{ $ports['protocol'] }} | Port: {{ $ports['port']}} --> Target Port: {{ $ports['targetPort'] }}                                
+                                Name: {{ $ports['name'] ?? 'default' }} | Protocol: {{ $ports['protocol'] }} | Port: {{ $ports['port']}} --> Target Port: {{ $ports['targetPort'] }}                                
                                 </span><br>
                             @endif
                         @endforeach

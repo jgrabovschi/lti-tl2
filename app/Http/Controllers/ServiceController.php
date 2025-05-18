@@ -206,7 +206,7 @@ class ServiceController extends Controller
                     ],
                     'spec' => [
                         'selector' => [
-                            'app' => $request->labelName //aqui é o label dos outros containers dentro do spec/matchlabels
+                            'app' => $request->selector //aqui é o label dos outros containers dentro do spec/matchlabels
                         ],
                         'ports' => $portsJson,
                     ],
@@ -225,10 +225,14 @@ class ServiceController extends Controller
                     'metadata' => [
                         'name' => $request->name,
                         'annotations' => [
-                            'nginx.ingress.kubernetes.io/rewrite-target' => '/'
+                            //'nginx.ingress.kubernetes.io/rewrite-target' => '/'
+                            'kubernetes.io/ingress.class'=> 'traefik',                   # Use Traefik as ingress controller
+                            'traefik.ingress.kubernetes.io/router.entrypoints'=> 'web',    # Route via Traefik's "web" entrypoint (port 80)
+                            //'traefik.ingress.kubernetes.io/router.tls'=> 'false',        # Disable TLS (use HTTP)
                         ],
                     ],
                     'spec' => [
+                        'ingressClassName' => 'traefik',
                         'rules' => [[
                             'host' =>  $request->name. '.'.session('address') . '.sslip.io',
                             'http' =>[
@@ -246,7 +250,7 @@ class ServiceController extends Controller
             return redirect()->route('createService')->withErrors(['global' =>  $e->getMessage()]);
         }
 
-        return redirect()->route('showService')->with('success', 'Deployment ' . $request->input('name') . ' created successfully');
+        return redirect()->route('showService')->with('success', 'Service/Ingress ' . $request->input('name') . ' created successfully');
     }
 
    
