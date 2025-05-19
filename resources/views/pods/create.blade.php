@@ -66,7 +66,7 @@
         </div>
 
         <div class="mb-5">
-            <label for="port" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Ports<div class="text-xs text-slate-500 dark:text-slate-300">Specify more separated by , (Example: 80,443)</div></label>
+            <label for="port" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Ports<div class="text-xs text-slate-500 dark:text-slate-300">Specify many separated by , (Example: 80,443)</div></label>
             <input type="text" name="port" id="port" value="{{ old('port', '') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="" />
             @error('image')
                 <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
