@@ -57,26 +57,113 @@
             @enderror
         </div>
 
+        <!-- Formulário para adicionar múltiplos containers -->
         <div class="mb-5">
-            <label for="image" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Image</label>
-            <input type="text" name="image" id="image" value="{{ old('image', '') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="" />
-            @error('image')
+            <h5 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Add Container</h5>
+
+            @error('containers')
                 <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
             @enderror
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="container-name" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+                    <input type="text" id="container-name" class="container-input w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                </div>
+
+                <div>
+                    <label for="container-image" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Image</label>
+                    <input type="text" id="container-image" class="container-input w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                </div>
+
+                <div>
+                    <label for="container-ports" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Ports <span class="text-xs text-slate-500 dark:text-slate-300">(Ex: 80,443)</span></label>
+                    <input type="text" id="container-ports" class="container-input w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                </div>
+            </div>
+
+            <button type="button" onclick="addContainer()" class="mt-3 text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-500 dark:hover:bg-green-600 dark:focus:ring-green-700">
+                + Add Container
+            </button>
         </div>
 
-        <div class="mb-5">
-            <label for="port" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Ports<div class="text-xs text-slate-500 dark:text-slate-300">Specify many separated by , (Example: 80,443)</div></label>
-            <input type="text" name="port" id="port" value="{{ old('port', '') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="" />
-            @error('image')
-                <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
-            @enderror
+        <!-- Lista de containers adicionados -->
+        <div class="overflow-x-auto mt-6">
+            <table id="container-list" class="w-full mb-5 text-sm text-left text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-600">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th class="px-4 py-2">Name</th>
+                        <th class="px-4 py-2">Image</th>
+                        <th class="px-4 py-2">Ports</th>
+                        <th class="px-4 py-2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="container-table-body" class="bg-white dark:bg-gray-800">
+                    <!-- preenchido dinamicamente -->
+                </tbody>
+            </table>
         </div>
+
+        <!-- Campo escondido com containers em JSON -->
+        <input type="hidden" name="containers" id="containers-json" />
 
         <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Save</button>
     </form>
     
 </div>
+
+<script>
+    const containers = [];
+    updateContainerTable();
+
+    function addContainer() {
+        const name = document.getElementById('container-name').value.trim();
+        const image = document.getElementById('container-image').value.trim();
+        const portsRaw = document.getElementById('container-ports').value.trim();
+
+        if (!name || !image) {
+            alert('Name and Image are required.');
+            return;
+        }
+
+        const ports = portsRaw ? portsRaw.split(',').map(p => p.trim()) : [];
+
+        containers.push({ name, image, ports });
+        updateContainerTable();
+        updateHiddenInput();
+
+        // Limpar campos
+        document.querySelectorAll('.container-input').forEach(input => input.value = '');
+    }
+
+    function removeContainer(index) {
+        containers.splice(index, 1);
+        updateContainerTable();
+        updateHiddenInput();
+    }
+
+    function updateContainerTable() {
+        const tbody = document.getElementById('container-table-body');
+        if (containers.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4">No containers added</td></tr>';
+            return;
+        }
+        tbody.innerHTML = containers.map((c, i) => `
+            <tr class="border-t border-gray-200 dark:border-gray-600">
+                <td class="px-4 py-2">${c.name}</td>
+                <td class="px-4 py-2">${c.image}</td>
+                <td class="px-4 py-2">${c.ports.join(', ')}</td>
+                <td class="px-4 py-2">
+                    <button type="button" onclick="removeContainer(${i})" class="text-red-600 hover:underline dark:text-red-400">Remove</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function updateHiddenInput() {
+        document.getElementById('containers-json').value = JSON.stringify(containers);
+    }
+</script>
 
 
 

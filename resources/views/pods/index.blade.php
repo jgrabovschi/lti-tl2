@@ -2,6 +2,7 @@
 
 @section('main')
 
+
 <div class="flex justify-center">
     <div class="block p-6  w-md bg-white border border-gray-200 rounded-lg shadow-sm  dark:bg-gray-800 dark:border-gray-700">
     
@@ -34,6 +35,8 @@
 </form>
 @if (!empty($pods))
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-4">
+
+
     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
@@ -41,13 +44,12 @@
                 <th class="px-6 py-3">Namespace</th>
                 <th class="px-6 py-3">Node</th>
                 <th class="px-6 py-3">Status</th>
-                <th class="px-6 py-3">Images</th>
-                <th class="px-6 py-3">Ports</th>
+                <th class="px-6 py-3">Containers</th>
                 <th class="px-6 py-3">Actions</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($pods as $pod)
+            @foreach ($pods as $index => $pod)
                 @php
                     $status = $pod['status']['phase'] ?? 'Unknown';
                     $statusColor = match($status) {
@@ -56,6 +58,7 @@
                         'Failed' => 'text-red-700 bg-red-200',
                         default => 'text-gray-700 bg-gray-200',
                     };
+                    $cardId = 'containerCard' . $index;
                 @endphp
                 <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200">
                     <td class="px-6 py-4">{{ $pod['metadata']['name'] ?? 'N/A' }}</td>
@@ -67,34 +70,75 @@
                         </span>
                     </td>
                     <td class="px-6 py-4">
-                        @foreach ($pod['spec']['containers'] as $container)
-                            <div>{{ $container['image'] }}</div>
-                        @endforeach
-                    </td>
-                    <td class="px-6 py-4">
-                        @foreach ($pod['spec']['containers'] as $container)
-                            @if (!empty($container['ports']))
-                                @foreach ($container['ports'] as $port)
-                                    <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1">
-                                        {{ $port['containerPort'] }}
-                                    </span>
-                                @endforeach
-                            @endif
-                        @endforeach
+                        <button
+                            onclick="document.getElementById('{{ $cardId }}').classList.remove('hidden')"
+                            class="p-1 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition"
+                            title="Ver containers" >
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor">
+                                <path d="M480-320q75 0 127.5-52.5T660-500q0-75-52.5-127.5T480-680q-75 0-127.5 52.5T300-500q0 75 52.5 127.5T480-320Zm0-72q-45 0-76.5-31.5T372-500q0-45 31.5-76.5T480-608q45 0 76.5 31.5T588-500q0 45-31.5 76.5T480-392Zm0 192q-146 0-266-81.5T40-500q54-137 174-218.5T480-800q146 0 266 81.5T920-500q-54 137-174 218.5T480-200Zm0-300Zm0 220q113 0 207.5-59.5T832-500q-50-101-144.5-160.5T480-720q-113 0-207.5 59.5T128-500q50 101 144.5 160.5T480-280Z"/>
+                            </svg>
+                        </button>
+
+
+                        <!-- Modal / Floating Card -->
+                        <div id="{{ $cardId }}" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/30 backdrop-blur-sm">
+                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 w-full max-w-lg">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h2 class="text-lg font-bold text-gray-800 dark:text-white">Containers inside the pod {{ $pod['metadata']['name'] }}</h2>
+                                    <button onclick="document.getElementById('{{ $cardId }}').classList.add('hidden')" class="text-red-500 cursor-pointer font-semibold hover:underline">
+                                       <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px" fill="currentColor">
+                                        <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+                                    </button>
+                                </div>
+
+                                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                                    <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-300">
+                                        <tr>
+                                            <th class="px-4 py-2">Name</th>
+                                            <th class="px-4 py-2">Image</th>
+                                            <th class="px-4 py-2">Ports</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white dark:bg-gray-800">
+                                        @foreach ($pod['spec']['containers'] as $container)
+                                            <tr class="border-b dark:border-gray-700">
+                                                <td class="px-4 py-2">{{ $container['name'] }}</td>
+                                                <td class="px-4 py-2">{{ $container['image'] }}</td>
+                                                <td class="px-4 py-2">
+                                                    @if (!empty($container['ports']))
+                                                        @foreach ($container['ports'] as $port)
+                                                            <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1">
+                                                                {{ $port['containerPort'] }}
+                                                            </span>
+                                                        @endforeach
+                                                    @else
+                                                        <span class="text-gray-400 italic">None</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </td>
                     <td class="px-6 py-4">
                         <form method="POST" action="{{ route('deletePod', ['name' => $pod['metadata']['name'], 'namespace' => $pod['metadata']['namespace']]) }}" onsubmit="return confirm('Are you sure you want to delete this pod?');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="p-1 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
+                                    <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/>
+                                </svg>
                             </button>
                         </form>
                     </td>
                 </tr>
             @endforeach
         </tbody>
-    </table>    
+    </table>
+
+
 </div>
 @else
     <div class="text-center mt-4">
@@ -112,6 +156,27 @@
             }, 3000); // wait 5 seconds before starting fade
         }
     });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Fecha ao clicar fora do card
+        document.querySelectorAll('[id^="containerCard"]').forEach(modal => {
+            modal.addEventListener('click', e => {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                }
+            });
+        });
+
+        // Fecha com tecla ESC
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('[id^="containerCard"]').forEach(modal => {
+                    modal.classList.add('hidden');
+                });
+            }
+        });
+    });
 </script>
+
 
 @endsection

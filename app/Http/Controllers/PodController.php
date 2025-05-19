@@ -68,57 +68,66 @@ class PodController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string',
-            'namespace' => 'required|string',
-            'image' => 'required|string',
-            'port' => 'required|string',
-        ]);
+public function store(Request $request)
+{
+    $request->validate([
+        'name' => 'required|string',
+        'namespace' => 'required|string',
+        'containers' => 'required|json',
+    ]);
 
-        $ports = explode(',', $request->port);
+    $containersInput = json_decode($request->containers, true);
 
-
-        $client = new Client([
-            'verify' => false
-        ]);
-
-        try{
-
-            $client->post('https://' . session('address') . ':' . session('port') . '/api/v1/namespaces/' . $request->namespace . '/pods', [
-                'headers' => [
-                    'Authorization' => "Bearer " . session('token'),
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json',
-                ],
-                'json' => [
-                    'apiVersion' => 'v1',
-                    'kind' => 'Pod',
-                    'metadata' => [
-                        'name' => $request->name,
-                        'namespace' => $request->namespace,
-                    ],
-                    'spec' => [
-                        'containers' => [
-                            [
-                                'name' => $request->name,
-                                'image' => $request->image,
-                                'ports' => array_map(function ($port) {
-                                    return ['containerPort' => (int)$port];
-                                }, $ports),
-                            ],
-                        ],
-                    ],
-                ],
-            ]);
-        }
-        catch (\Exception $e) {
-            return redirect()->route('showPods')->withErrors('global', 'Failed to create pod: ' . $e->getMessage());
-        }
-
-        return redirect()->route('showPods')->with('success', 'Pod ' . $request->input('name') . ' created successfully');
+    if (!is_array($containersInput) || empty($containersInput)) {
+        return redirect()->back()->withErrors(['global' => 'At least one container is required.']);
     }
+
+    // Validação de cada container individualmente
+    foreach ($containersInput as $container) {
+        if (empty($container['name']) || empty($container['image'])) {
+            return redirect()->back()->withErrors(['global' => 'Each container must have a name and image.']);
+        }
+    }
+
+    // Preparar estrutura dos containers para o manifest do Pod
+    $containers = array_map(function ($container) {
+        return [
+            'name' => $container['name'],
+            'image' => $container['image'],
+            'ports' => array_map(function ($port) {
+                return ['containerPort' => (int) trim($port)];
+            }, $container['ports'] ?? []),
+        ];
+    }, $containersInput);
+
+    $client = new \GuzzleHttp\Client(['verify' => false]);
+
+    try {
+        $client->post('https://' . session('address') . ':' . session('port') . '/api/v1/namespaces/' . $request->namespace . '/pods', [
+            'headers' => [
+                'Authorization' => "Bearer " . session('token'),
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ],
+            'json' => [
+                'apiVersion' => 'v1',
+                'kind' => 'Pod',
+                'metadata' => [
+                    'name' => $request->name,
+                    'namespace' => $request->namespace,
+                ],
+                'spec' => [
+                    'containers' => $containers,
+                ],
+            ],
+        ]);
+    } catch (\Exception $e) {
+        return redirect()->route('showPods')->withErrors(['global' => 'Failed to create pod: ' . $e->getMessage()]);
+    }
+
+    return redirect()->route('showPods')->with('success', 'Pod ' . $request->name . ' created successfully');
+}
+
 
    
     /**
