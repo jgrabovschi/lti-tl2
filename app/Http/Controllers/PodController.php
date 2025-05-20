@@ -115,6 +115,9 @@ public function store(Request $request)
                 'metadata' => [
                     'name' => $request->name,
                     'namespace' => $request->namespace,
+                    'labels' => [
+                        'app' => $request->name,
+                    ],
                 ],
                 'spec' => [
                     'containers' => $containers,
