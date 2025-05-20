@@ -226,13 +226,13 @@ class ServiceController extends Controller
                         'name' => $request->name,
                         'annotations' => [
                             //'nginx.ingress.kubernetes.io/rewrite-target' => '/'
-                            'kubernetes.io/ingress.class'=> 'traefik',                   # Use Traefik as ingress controller
+                            //'kubernetes.io/ingress.class'=> 'traefik',                   # Use Traefik as ingress controller
                             'traefik.ingress.kubernetes.io/router.entrypoints'=> 'web',    # Route via Traefik's "web" entrypoint (port 80)
                             //'traefik.ingress.kubernetes.io/router.tls'=> 'false',        # Disable TLS (use HTTP)
                         ],
                     ],
                     'spec' => [
-                        'ingressClassName' => 'traefik',
+                        //'ingressClassName' => 'traefik',
                         'rules' => [[
                             'host' =>  $request->name. '.'.session('address') . '.sslip.io',
                             'http' =>[
