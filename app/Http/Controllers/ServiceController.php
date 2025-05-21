@@ -73,12 +73,8 @@ class ServiceController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request)
+    public function create()
     {
-
-        $request->validate([
-            'numberOfPorts' => ['required','numeric','min:1'],
-        ]);
         
         $client = new Client([
             'verify' => false
@@ -93,7 +89,7 @@ class ServiceController extends Controller
 
         $namespaces = json_decode($res->getBody(), true)['items'];
 
-        return view('service.create')->with('namespaces', $namespaces)->with('numberOfPorts', $request->numberOfPorts);
+        return view('service.create')->with('namespaces', $namespaces);
     }
 
     /**
@@ -105,12 +101,11 @@ class ServiceController extends Controller
 
         $ports = [];
         for($i = 0; $i < $request->numberContainer; $i++){
-            $ports[$i] = [];
+            $ports[1] = [];
         }
         $rules['name'] = 'required|string';
         $rules['namespace'] = 'required|string';
         $rules['selector'] = 'required|string';
-        $rules['numberOfPorts'] = 'required|numeric';
         foreach ($request->input() as $key => $value) {
             if (Str::contains($key, 'namePort_')) {
                 

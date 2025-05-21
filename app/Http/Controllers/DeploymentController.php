@@ -46,12 +46,8 @@ class DeploymentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request)
+    public function create()
     {
-
-        $request->validate([
-            'numberOfContainers' => ['required','numeric','min:1'],
-        ]);
         
         $client = new Client([
             'verify' => false
@@ -66,7 +62,7 @@ class DeploymentController extends Controller
 
         $namespaces = json_decode($res->getBody(), true)['items'];
 
-        return view('deployment.create')->with('namespaces', $namespaces)->with('numberContainer', $request->numberOfContainers);
+        return view('deployment.create')->with('namespaces', $namespaces);
     }
 
     /**
@@ -74,65 +70,38 @@ class DeploymentController extends Controller
      */
     public function store(Request $request)
     {
-        $rules = [];
 
-        $containers = [];
-        for($i = 0; $i < $request->numberContainer; $i++){
-            $containers[$i] = [];
+        $request->validate([
+            'name' => 'required|string',
+            'namespace' => 'required|string',
+            'replicas' => 'required|numeric',
+            'labelName' => 'required|string',
+            'containers' => 'required|json',
+        ]);
+
+        $containersInput = json_decode($request->containers, true);
+
+        if (!is_array($containersInput) || empty($containersInput)) {
+            return redirect()->back()->withErrors(['global' => 'At least one container is required.']);
         }
-        $rules['name'] = 'required|string';
-        $rules['namespace'] = 'required|string';
-        $rules['replicas'] = 'required|numeric';
-        $rules['labelName'] = 'required|string';
-        $rules['numberContainer'] = 'required|numeric';
-        foreach ($request->input() as $key => $value) {
-            if (Str::contains($key, 'nameContainer_')) {
-                
-                $rules[$key] = 'required|string'; 
-                $aux = explode('_', $key);
-                $containers[((int) $aux[1]) - 1]['name'] = $value;
-                
 
-            }elseif(Str::contains($key, 'imageContainer_')){
-                $rules[$key] = 'required|string'; 
-                $aux = explode('_', $key);
-                $containers[((int) $aux[1]) -1]['image'] = $value;
-                 
-            }elseif(Str::contains($key, 'port_')){
-                $rules[$key] = 'required|string'; 
-                $aux = explode('_', $key);
-                $containers[((int) $aux[1]) - 1]['port'] = explode(',', $value);
-                
-            }            
-
-            
+        // Validação de cada container individualmente
+        foreach ($containersInput as $container) {
+            if (empty($container['name']) || empty($container['image'])) {
+                return redirect()->back()->withErrors(['global' => 'Each container must have a name and image.']);
+            }
         }
-        $request->validate($rules);
 
+        // Preparar estrutura dos containers para o manifest do Pod
         $containersJson = array_map(function ($container) {
             return [
                 'name' => $container['name'],
                 'image' => $container['image'],
                 'ports' => array_map(function ($port) {
-                    return ['containerPort' => (int)$port];
-                }, $container['port'] ?? []),
+                    return ['containerPort' => (int) trim($port)];
+                }, $container['ports'] ?? []),
             ];
-        }, $containers);
-        //dd($containersJson);
-
-        /*$request->validate([
-            'name' => 'required|string',
-            'namespace' => 'required|string',
-            'image' => 'required|string',
-            'port' => 'required|string',
-            'replicas' => 'required|numeric',
-            'labelName' => 'required|string',
-            'numberContainer' => 'required|numeric',
-        ]);*/
-        //preciso name_container
-        //request image
-        //port
-        //$ports = explode(',', $request->port);
+        }, $containersInput);
         
         $client = new Client([
             'verify' => false
