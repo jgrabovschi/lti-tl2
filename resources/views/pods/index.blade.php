@@ -84,7 +84,7 @@
                         <div id="{{ $cardId }}" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/30 backdrop-blur-sm">
                             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 w-full max-w-lg">
                                 <div class="flex justify-between items-center mb-4">
-                                    <h2 class="text-lg font-bold text-gray-800 dark:text-white">Containers inside the pod {{ $pod['metadata']['name'] }}</h2>
+                                    <h2 class="text-lg font-bold text-gray-800 dark:text-white">Containers inside the pod "{{ $pod['metadata']['name'] }}"</h2>
                                     <button onclick="document.getElementById('{{ $cardId }}').classList.add('hidden')" class="text-red-500 cursor-pointer font-semibold hover:underline">
                                        <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px" fill="currentColor">
                                         <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
