@@ -76,7 +76,7 @@
 
             {{-- Containers --}}
             <div>
-                <h5 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Add Pods</h5>
+                <h5 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Add Containers</h5>
                 @error('containers') <div class="text-red-500 text-sm mt-2">{{ $message }}</div> @enderror
 
                 <div class="grid grid-cols-1 gap-4">
