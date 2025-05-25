@@ -26,23 +26,17 @@ class ServiceController extends Controller
             'Accept' => 'application/json',
         ]]);
 
-        $resDeploy = $client->get('https://' . session('address') . ':' . session('port') . '/apis/apps/v1/deployments', ['headers' => 
-        [
-            'Authorization' => "Bearer " . session('token'),
-            'Accept' => 'application/json',
-        ]]);
-        $resPod = $client->get('https://' . session('address') . ':' . session('port') . '/api/v1/pods', ['headers' => 
-        [
-            'Authorization' => "Bearer " . session('token'),
-            'Accept' => 'application/json',
-        ]]);
-
+        
         $dataServices = json_decode($resServices->getBody(), true)['items'];
         $dataIngress = json_decode($resIngress->getBody(), true)['items'];
-        $dataDeploy = json_decode($resServices->getBody(), true)['items'];
-        $dataPod = json_decode($resIngress->getBody(), true)['items'];
-        dd($dataPod);
-        // no deploy é no ['spec'][selector]['app']
+        //dd($dataPods);
+        // no deploy é no ['spec']['selector']['matchLabels']['app']
+        // no pods é no ['metadata']['labels']['app']
+        // namesapces ['metadata]['name']
+        
+
+        //dd($selectoresBYnamespaces);
+
         return view('service.index')->with('services', $dataServices)->with('ingresses', $dataIngress);
     }
 
@@ -101,9 +95,46 @@ class ServiceController extends Controller
             'Accept' => 'application/json',
         ]]);
 
-        $namespaces = json_decode($res->getBody(), true)['items'];
+        $resDeploy = $client->get('https://' . session('address') . ':' . session('port') . '/apis/apps/v1/deployments', ['headers' => 
+        [
+            'Authorization' => "Bearer " . session('token'),
+            'Accept' => 'application/json',
+        ]]);
+        $resPod = $client->get('https://' . session('address') . ':' . session('port') . '/api/v1/pods', ['headers' => 
+        [
+            'Authorization' => "Bearer " . session('token'),
+            'Accept' => 'application/json',
+        ]]);
 
-        return view('service.create')->with('namespaces', $namespaces);
+        $namespaces = json_decode($res->getBody(), true)['items'];
+        $dataDeploy = json_decode($resDeploy->getBody(), true)['items'];
+        $dataPods = json_decode($resPod->getBody(), true)['items'];
+
+        $selectoresBYnamespaces = [];
+        foreach($namespaces as $namespace){
+            $selectoresBYnamespaces[$namespace['metadata']['name']] = [];
+        }
+
+        foreach($dataDeploy as $deploy){
+            if (isset($deploy['spec']['selector']['matchLabels']['app'])) {
+                $selectoresBYnamespaces[$deploy['metadata']['namespace']][] = $deploy['spec']['selector']['matchLabels']['app'];
+            }
+            
+        }
+
+        foreach($dataPods as $pod){
+            if (isset($pod['metadata']['labels']['app'])) {
+                $selectoresBYnamespaces[$pod['metadata']['namespace']][] = $pod['metadata']['labels']['app'];
+            }
+            
+        }
+        foreach($selectoresBYnamespaces as $index => $selectors){
+            
+            $selectoresBYnamespaces[$index] = array_values(array_unique($selectors));
+        }
+        //dd($selectoresBYnamespaces);
+
+        return view('service.create')->with('namespaces', $namespaces)->with('selectoresByNamespaces', $selectoresBYnamespaces);
     }
 
     /**
@@ -222,7 +253,8 @@ class ServiceController extends Controller
                 ],
             ]);
 
-            $client->post('https://' . session('address') . ':' . session('port') . '/apis/networking.k8s.io/v1/namespaces/' . $request->namespace . '/ingresses', [
+            if(!$request->has('no_ingress')){
+                $client->post('https://' . session('address') . ':' . session('port') . '/apis/networking.k8s.io/v1/namespaces/' . $request->namespace . '/ingresses', [
                 'headers' => [
                     'Authorization' => "Bearer " . session('token'),
                     'Accept' => 'application/json',
@@ -246,12 +278,12 @@ class ServiceController extends Controller
                             'host' =>  $request->name. '.'.session('address') . '.sslip.io',
                             'http' =>[
                                 'paths' => $rulesJson,
-                            ]
-                        ]]
+                                ]
+                            ]]
+                        ],
                     ],
-                ],
-            ]);
-            
+                ]);
+            }
             
         }
         catch (\Exception $e) {
