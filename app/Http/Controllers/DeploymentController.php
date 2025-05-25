@@ -146,7 +146,7 @@ class DeploymentController extends Controller
             
         }
         catch (\Exception $e) {
-            dd($e->getResponse()->getBody()->getContents());
+            //dd($e->getResponse()->getBody()->getContents());
             return redirect()->route('createDeployment')->withErrors(['global' =>  $e->getMessage()]);
         }
 
