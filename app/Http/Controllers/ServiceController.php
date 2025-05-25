@@ -26,9 +26,23 @@ class ServiceController extends Controller
             'Accept' => 'application/json',
         ]]);
 
+        $resDeploy = $client->get('https://' . session('address') . ':' . session('port') . '/apis/apps/v1/deployments', ['headers' => 
+        [
+            'Authorization' => "Bearer " . session('token'),
+            'Accept' => 'application/json',
+        ]]);
+        $resPod = $client->get('https://' . session('address') . ':' . session('port') . '/api/v1/pods', ['headers' => 
+        [
+            'Authorization' => "Bearer " . session('token'),
+            'Accept' => 'application/json',
+        ]]);
+
         $dataServices = json_decode($resServices->getBody(), true)['items'];
         $dataIngress = json_decode($resIngress->getBody(), true)['items'];
-        //dd($dataIngress);
+        $dataDeploy = json_decode($resServices->getBody(), true)['items'];
+        $dataPod = json_decode($resIngress->getBody(), true)['items'];
+        dd($dataPod);
+        // no deploy é no ['spec'][selector]['app']
         return view('service.index')->with('services', $dataServices)->with('ingresses', $dataIngress);
     }
 
