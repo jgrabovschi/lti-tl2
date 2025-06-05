@@ -1,6 +1,6 @@
 <?php
 
-
+use App\Http\Controllers\AiController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NamespaceController;
@@ -57,6 +57,8 @@ Route::middleware(CheckSessionAccess::class)->group(function () {
     Route::delete('/namespaces/{namespace}/service/{name}', [ServiceController::class, 'destroy'])->name('deleteService');
     Route::delete('/namespaces/{namespace}/ingress/{name}', [ServiceController::class, 'destroyIngress'])->name('deleteIngress');
 
+    // AI
+    Route::get('/ai', [AiController::class, 'index'])->name('showAI');
 
 
     // Logout
