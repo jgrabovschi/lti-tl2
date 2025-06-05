@@ -93,7 +93,7 @@
                         @endif
                     </td>
                     <td class="px-6 py-4">
-                        <form method="POST" action="{{ route('deleteService', ['name' => $service['metadata']['name'], 'namespace' => $service['metadata']['namespace']]) }}" onsubmit="return confirm('Are you sure you want to delete this ingress?');">
+                        <form method="POST" action="{{ route('deleteService', ['name' => $service['metadata']['name'], 'namespace' => $service['metadata']['namespace']]) }}" onsubmit="return confirm('Are you sure you want to delete this service?');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="p-1 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition">

@@ -45,10 +45,6 @@
                 <th class="px-6 py-3">Namespace</th>
                 <th class="px-6 py-3">Replicas</th>
                 <th class="px-6 py-3">Ready Replicas</th>
-                <th class="px-6 py-3">
-                            Available Replicas
-                </th>
-                <th class="px-6 py-3">Container image</th>
                 <th class="px-6 py-3">Selectors</th>
                 <th class="px-6 py-3">Containers</th>
                 <th class="px-6 py-3">Actions</th>
@@ -64,8 +60,6 @@
                     <td class="px-6 py-4">{{ $deploy['metadata']['namespace'] ?? 'default' }}</td>
                     <td class="px-6 py-4">{{ $deploy['spec']['replicas'] }}</td>
                     <td class="px-6 py-4">{{ $deploy['status']['readyReplicas'] ?? '0' }}</td>
-                    <td class="px-6 py-4">{{ $deploy['status']['updatedReplicas'] ?? 'N/A'}}</td>
-                    <td class="px-6 py-4">{{ $deploy['spec']['template']['spec']['containers'][0]['image'] }}</td>
                     <td class="px-6 py-4">
                         @if(array_key_exists('matchLabels', $deploy['spec']['selector']))
                             @foreach ($deploy['spec']['selector']['matchLabels'] as $selectors)
@@ -130,7 +124,7 @@
                         </div>
                     </td>
                     <td class="px-6 py-4">
-                        <form method="POST" action="{{ route('deleteDeployment', ['name' => $deploy['metadata']['name'], 'namespace' => $deploy['metadata']['namespace']]) }}" onsubmit="return confirm('Are you sure you want to delete this pod?');">
+                        <form method="POST" action="{{ route('deleteDeployment', ['name' => $deploy['metadata']['name'], 'namespace' => $deploy['metadata']['namespace']]) }}" onsubmit="return confirm('Are you sure you want to delete this deployment?');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="p-1 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition">
