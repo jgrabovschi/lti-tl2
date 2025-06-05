@@ -147,7 +147,7 @@ class DeploymentController extends Controller
         }
         catch (\Exception $e) {
             //dd($e->getResponse()->getBody()->getContents());
-            return redirect()->route('createDeployment')->withErrors(['global' =>  $e->getMessage()]);
+            return redirect()->route('createDeployment')->withErrors(['global' =>  $e->getResponse()->getBody()->getContents()]);
         }
 
         return redirect()->route('showDeployment')->with('success', 'Deployment ' . $request->input('name') . ' created successfully');
