@@ -59,7 +59,8 @@ Route::middleware(CheckSessionAccess::class)->group(function () {
 
     // AI
     Route::get('/ai', [AiController::class, 'index'])->name('showAI');
-
+    Route::post('/ai/message', [AiController::class, 'storeMessage'])->name('storeAIMessage');
+    Route::get('/ai/clear', [AiController::class, 'clearChat'])->name('clearAIChat');
 
     // Logout
     Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
