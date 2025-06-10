@@ -43,28 +43,22 @@
     </button>
 </form>
 
-
 <div>
-  <!-- Tabs -->
-  <div class="flex space-x-2 mt-6 mb-4" id="tabs">
-  <button
-    class="tab-button text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-    data-tab="tab1"
-  >
-    Tabela de Services
-  </button>
-  <button
-    class="tab-button text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-    data-tab="tab2"
-  >
-    Tabela de Ingresses
-  </button>
-</div>
+  <!-- New Tabs as UL -->
+  <ul class="flex flex-wrap text-sm mt-4 font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400" id="tabs">
+    <li class="me-2">
+        <a href="#" data-tab="tab1" aria-current="page" class="inline-block p-4 text-blue-600 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500 tab-link">Services</a>
+    </li>
+    <li class="me-2">
+        <a href="#" data-tab="tab2" class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300 tab-link">Ingresses</a>
+    </li>
+   
+  </ul>
 
-  <!-- Conteúdo -->
-  <div id="tab1" class="tab-content p-4">
+  <!-- Conteúdo das tabs -->
+  <div id="tab1" class="tab-content">
     @if (!empty($services))
-        <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-4">
+        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
@@ -79,17 +73,6 @@
                 </thead>
                 <tbody>
                     @foreach ($services as $service)
-                        @php
-                        /*
-                            $status = $pod['status']['phase'] ?? 'Unknown';
-                            $statusColor = match($status) {
-                                'Running' => 'text-green-700 bg-green-200',
-                                'Pending' => 'text-yellow-700 bg-yellow-200',
-                                'Failed' => 'text-red-700 bg-red-200',
-                                default => 'text-gray-700 bg-gray-200',
-                            };
-                        */
-                        @endphp
                         <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                             <td class="px-6 py-4">{{ $service['metadata']['name'] ?? 'N/A' }}</td>
                             <td class="px-6 py-4">{{ $service['metadata']['namespace'] ?? 'default' }}</td>
@@ -131,9 +114,10 @@
             </div>
         @endif
   </div>
-  <div id="tab2" class="tab-content p-4 hidden">
+
+  <div id="tab2" class="tab-content hidden">
     @if (!empty($ingresses))
-        <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-4">
+        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
@@ -146,17 +130,6 @@
                 </thead>
                 <tbody>
                     @foreach ($ingresses as $ingress)
-                        @php
-                        /*
-                            $status = $pod['status']['phase'] ?? 'Unknown';
-                            $statusColor = match($status) {
-                                'Running' => 'text-green-700 bg-green-200',
-                                'Pending' => 'text-yellow-700 bg-yellow-200',
-                                'Failed' => 'text-red-700 bg-red-200',
-                                default => 'text-gray-700 bg-gray-200',
-                            };
-                        */
-                        @endphp
                         <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                             <td class="px-6 py-4">{{ $ingress['metadata']['name'] ?? 'N/A' }}</td>
                             <td class="px-6 py-4">{{ $ingress['metadata']['namespace'] ?? 'default' }}</td>
@@ -186,58 +159,55 @@
         </div>
         @else
             <div class="text-center mt-4">
-                <p class="text-gray-500">No Ingresses found.</p>
+                <p class="text-gray-500">No Ingress found.</p>
             </div>
         @endif
   </div>
+
+  <div id="tab3" class="tab-content p-4 hidden">
+    <p>Settings content</p>
+  </div>
+
+  <div id="tab4" class="tab-content p-4 hidden">
+    <p>Contacts content</p>
+  </div>
 </div>
 
-
-
-
-
-
 <script>
+  // Script para controle de tabs
+  document.querySelectorAll('.tab-link').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      // Remover active de todos
+      document.querySelectorAll('.tab-link').forEach(el => {
+        el.classList.remove('active');
+        el.classList.remove('text-blue-600');
+        el.classList.add('text-gray-500');
+        el.classList.add('hover:text-gray-600');
+        el.classList.add('hover:bg-gray-50');
+        el.classList.remove('bg-gray-100');
+        el.classList.remove('dark:bg-gray-800');
+        el.classList.remove('dark:text-blue-500');
+      });
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const flash = document.getElementById('flash-message');
-        if (flash) {
-            setTimeout(() => {
-                flash.classList.add('opacity-0', 'transition-opacity', 'duration-1000');
-                setTimeout(() => flash.remove(), 1000); 
-            }, 3000); // wait 5 seconds before starting fade
-        }
+      // Adicionar active ao clicado
+      link.classList.add('active');
+      link.classList.add('text-blue-600');
+      link.classList.remove('text-gray-500');
+      link.classList.remove('hover:text-gray-600');
+      link.classList.remove('hover:bg-gray-50');
+      link.classList.add('bg-gray-100');
+      link.classList.add('dark:bg-gray-800');
+      link.classList.add('dark:text-blue-500');
+
+      // Mostrar o conteúdo correspondente
+      const tabId = link.getAttribute('data-tab');
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.add('hidden');
+      });
+      document.getElementById(tabId).classList.remove('hidden');
     });
-
-    document.addEventListener('DOMContentLoaded', function () {
-    const tabButtons = document.querySelectorAll('.tab-button');
-    const tabContents = document.querySelectorAll('.tab-content');
-
-    tabButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const target = button.getAttribute('data-tab');
-
-            // Esconde todos os conteúdos
-            tabContents.forEach(content => content.classList.add('hidden'));
-
-            // Remove estilo ativo dos botões
-            tabButtons.forEach(btn => {
-                btn.classList.remove('ring', 'ring-offset-2', 'ring-blue-400');
-                btn.classList.remove('opacity-100');
-                btn.classList.add('opacity-60');
-            });
-
-            // Mostra conteúdo
-            document.getElementById(target).classList.remove('hidden');
-
-            // Estilo ativo do botão
-            button.classList.remove('opacity-60');
-            button.classList.add('opacity-100', 'ring', 'ring-offset-2', 'ring-blue-400');
-        });
-    });
-});
-
-
+  });
 </script>
 
 @endsection
