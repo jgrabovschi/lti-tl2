@@ -11,12 +11,10 @@
                 <p class="font-normal text-gray-700 dark:text-gray-400">Your chat is saved in the session. It will persist until you log out or clear the chat.</p>
             </div>
             <div>
-                <a href="{{ route('clearAIChat') }}" class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                    </svg>
+                <a href="{{ route('clearAIChat') }}" class="text-gray-700 bg-gray-200 hover:bg-gray-300 focus:ring-2 focus:outline-none focus:ring-gray-400 font-normal rounded-md text-sm px-4 py-2 text-center inline-flex items-center dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300 dark:focus:ring-gray-500">
                     Clear Chat
                 </a>
+
             </div>
         </div>
     </div>

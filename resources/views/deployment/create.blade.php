@@ -18,7 +18,7 @@
 
 </form>
 
-<div class="max-w-xl ml-4">
+<div class="max-w-xl">
     <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
 
         {{-- Toast de erro global --}}
@@ -38,11 +38,6 @@
         <form method="POST" action="{{ route('storeDeployment') }}" class="grid grid-cols-1 gap-6">
             @csrf
             @method('PUT')
-
-            {{-- Campos gerais --}}
-            <div>
-                <h2 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Informações Gerais</h2>
-            </div>
 
             <div>
                 <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
@@ -153,7 +148,7 @@
         updateHiddenInput();
 
         // Limpar campos
-        document.querySelectorAll('.pod-input').forEach(input => input.value = '');
+        document.querySelectorAll('.container-input').forEach(input => input.value = '');
     }
 
     function removeContainer(index) {

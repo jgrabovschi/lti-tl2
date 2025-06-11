@@ -18,7 +18,7 @@
 
 </form>
 
-<div class="max-w-xl ml-4">
+<div class="max-w-xl">
     <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
 
         {{-- Toast de erro global --}}
@@ -38,11 +38,6 @@
         <form method="POST" action="{{ route('storeService') }}" class="grid grid-cols-1 gap-6">
             @csrf
             @method('PUT')
-
-            {{-- Campos gerais --}}
-            <div>
-                <h2 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Informações Gerais</h2>
-            </div>
 
             <div>
                 <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
@@ -78,33 +73,31 @@
 
             {{-- Ports --}}
             <div>
-                <h2 class="text-lg font-semibold mt-6 mb-4 text-gray-800 dark:text-white">Ports</h2>
+                <h2 class="text-lg font-semibold mt-6 text-gray-800 dark:text-white">Ports</h2>
             </div>
 
-            <div class="p-4 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 space-y-4">
-                <div>
-                    <label for="namePort_1" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
-                    <input type="text" name="namePort_1" id="namePort_1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
-                    @error('namePort_1') <div class="text-red-500 text-sm mt-2">{{ $message }}</div> @enderror
-                </div>
+            <div>
+                <label for="namePort_1" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+                <input type="text" name="namePort_1" id="namePort_1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                @error('namePort_1') <div class="text-red-500 text-sm mt-2">{{ $message }}</div> @enderror
+            </div>
 
-                <div>
-                    <label for="protocolPort_1" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Protocol</label>
-                    <input type="text" name="protocolPort_1" id="protocolPort_1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
-                    @error('protocolPort_1') <div class="text-red-500 text-sm mt-2">{{ $message }}</div> @enderror
-                </div>
+            <div>
+                <label for="protocolPort_1" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Protocol</label>
+                <input type="text" name="protocolPort_1" id="protocolPort_1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                @error('protocolPort_1') <div class="text-red-500 text-sm mt-2">{{ $message }}</div> @enderror
+            </div>
 
-                <div>
-                    <label for="port_1" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Port</label>
-                    <input type="number" name="port_1" id="port_1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
-                    @error('port_1') <div class="text-red-500 text-sm mt-2">{{ $message }}</div> @enderror
-                </div>
+            <div>
+                <label for="port_1" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Port</label>
+                <input type="number" name="port_1" id="port_1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                @error('port_1') <div class="text-red-500 text-sm mt-2">{{ $message }}</div> @enderror
+            </div>
 
-                <div>
-                    <label for="targetPort_1" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Target Port</label>
-                    <input type="number" name="targetPort_1" id="targetPort_1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
-                    @error('targetPort_1') <div class="text-red-500 text-sm mt-2">{{ $message }}</div> @enderror
-                </div>
+            <div>
+                <label for="targetPort_1" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Target Port</label>
+                <input type="number" name="targetPort_1" id="targetPort_1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                @error('targetPort_1') <div class="text-red-500 text-sm mt-2">{{ $message }}</div> @enderror
             </div>
 
             <div>
