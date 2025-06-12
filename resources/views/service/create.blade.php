@@ -84,7 +84,11 @@
 
             <div>
                 <label for="protocolPort_1" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Protocol</label>
-                <input type="text" name="protocolPort_1" id="protocolPort_1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                <select name="protocolPort_1" id="protocolPort_1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <option value="SCTP">SCTP</option>
+                    <option value="TCP">TCP</option>
+                    <option value="UDP">UDP</option>
+                </select>
                 @error('protocolPort_1') <div class="text-red-500 text-sm mt-2">{{ $message }}</div> @enderror
             </div>
 

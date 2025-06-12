@@ -175,6 +175,16 @@
 </div>
 
 <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const flash = document.getElementById('flash-message');
+        if (flash) {
+            setTimeout(() => {
+                flash.classList.add('opacity-0', 'transition-opacity', 'duration-1000');
+                setTimeout(() => flash.remove(), 1000); 
+            }, 3000); // wait 5 seconds before starting fade
+        }
+    });
+
   // Script para controle de tabs
   document.querySelectorAll('.tab-link').forEach(link => {
     link.addEventListener('click', e => {
